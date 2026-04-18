@@ -1,0 +1,16 @@
+[gd_scene format=3 uid="uid://coxyoxf7kfb3h"]
+
+[ext_resource type="Script" uid="uid://c1fbnf407omuk" path="res://dynamic_chain.gd" id="1_dhpxl"]
+
+[sub_resource type="PhysicsMaterial" id="PhysicsMaterial_dhpxl"]
+
+[node name="DynamicChain" type="Node3D" unique_id=1116807158 node_paths=PackedStringArray("anchor", "link_container")]
+script = ExtResource("1_dhpxl")
+anchor = NodePath("StaticBody3D")
+link_container = NodePath("Node3D")
+metadata/_custom_type_script = "uid://c1fbnf407omuk"
+
+[node name="StaticBody3D" type="StaticBody3D" parent="." unique_id=153221936]
+physics_material_override = SubResource("PhysicsMaterial_dhpxl")
+
+[node name="Node3D" type="Node3D" parent="." unique_id=612302594]

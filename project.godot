@@ -11,8 +11,14 @@ config_version=5
 [application]
 
 config/name="ldjam59"
+run/main_scene="uid://uh5m17lb4xqr"
 config/features=PackedStringArray("4.6", "Mobile")
 config/icon="res://icon.svg"
+
+[display]
+
+window/stretch/mode="canvas_items"
+window/stretch/aspect="expand"
 
 [physics]
 

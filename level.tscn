@@ -1,0 +1,107 @@
+[gd_scene format=3 uid="uid://uh5m17lb4xqr"]
+
+[ext_resource type="PackedScene" uid="uid://coxyoxf7kfb3h" path="res://dynamic_chain.tscn" id="1_u52ul"]
+
+[sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_u52ul"]
+
+[sub_resource type="Sky" id="Sky_vonw3"]
+sky_material = SubResource("ProceduralSkyMaterial_u52ul")
+
+[sub_resource type="Environment" id="Environment_u52ul"]
+background_mode = 2
+sky = SubResource("Sky_vonw3")
+tonemap_mode = 2
+ssao_enabled = true
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_5xgho"]
+
+[sub_resource type="Curve3D" id="Curve3D_vonw3"]
+closed = true
+_data = {
+"points": PackedVector3Array(0, 0, 0, 0, 0, 0, -1.3386027, 0, -1.5016272, 0, 0, 0, 0, 0, 0, -2.589182, 0, 0.90603006, 0, 0, 0, 0, 0, 0, -0.35683975, 0, 3.3370626, 0, 0, 0, 0, 0, 0, 2.7754521, 0, 2.413738, 0, 0, 0, 0, 0, 0, 3.8390288, 0, 0.39177343, 0, 0, 0, 0, 0, 0, 2.9858298, 0, -1.571753, 0, 0, 0, 0, 0, 0, -0.4269658, 1.1054469, -1.8055061),
+"tilts": PackedFloat32Array(0, 0, 0, 0, 0, 0, 0)
+}
+point_count = 7
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_u52ul"]
+radius = 4.0
+
+[sub_resource type="SphereMesh" id="SphereMesh_vonw3"]
+radius = 4.0
+height = 8.0
+
+[sub_resource type="Animation" id="Animation_vonw3"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("PathFollow3D:progress_ratio")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [0.0]
+}
+
+[sub_resource type="Animation" id="Animation_u52ul"]
+resource_name = "new_animation"
+length = 8.233334
+loop_mode = 1
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("PathFollow3D:progress_ratio")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 8.233334),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [0.0, 1.0]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_vonw3"]
+_data = {
+&"RESET": SubResource("Animation_vonw3"),
+&"new_animation": SubResource("Animation_u52ul")
+}
+
+[node name="Level" type="Node3D" unique_id=1311408348]
+
+[node name="Camera3D" type="Camera3D" parent="." unique_id=419487614]
+transform = Transform3D(-0.058471136, 0.29433396, -0.9539123, 0, 0.95554715, 0.2948384, 0.9982891, 0.017239537, -0.055871926, -5.232774, 5.307586, -0.5610679)
+environment = SubResource("Environment_u52ul")
+current = true
+fov = 117.7
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="." unique_id=176021552]
+transform = Transform3D(70.08, 0, 0, 0, 1.0277178, 0, 0, 0, 53.305645, 0, 0, 0)
+mesh = SubResource("PlaneMesh_5xgho")
+
+[node name="DynamicChain" parent="." unique_id=1116807158 instance=ExtResource("1_u52ul")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.033792935, 9.105822, 0.032239288)
+link_count = 8
+
+[node name="Path3D" type="Path3D" parent="." unique_id=865080830]
+curve = SubResource("Curve3D_vonw3")
+
+[node name="PathFollow3D" type="PathFollow3D" parent="Path3D" unique_id=1870492756]
+transform = Transform3D(-0.8873927, 0, 0.4609351, 0, 0.99999756, 0, -0.4609272, 0, -0.8874079, -1.3386027, 0, -1.5016272)
+
+[node name="StaticBody3D" type="StaticBody3D" parent="Path3D/PathFollow3D" unique_id=1105439275]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Path3D/PathFollow3D/StaticBody3D" unique_id=585698067]
+shape = SubResource("SphereShape3D_u52ul")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Path3D/PathFollow3D/StaticBody3D" unique_id=2010544129]
+mesh = SubResource("SphereMesh_vonw3")
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="Path3D" unique_id=1959290712]
+libraries/ = SubResource("AnimationLibrary_vonw3")
+autoplay = &"new_animation"
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="." unique_id=1947049086]
+transform = Transform3D(1, 0, 0, 0, 0.70710677, 0.70710677, 0, -0.70710677, 0.70710677, 0, 0, 0)
+shadow_enabled = true
