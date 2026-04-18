@@ -1,7 +1,7 @@
 [gd_scene format=3 uid="uid://uh5m17lb4xqr"]
 
 [ext_resource type="Script" uid="uid://e2kgl8kik1g1" path="res://level.gd" id="1_oi3di"]
-[ext_resource type="PackedScene" uid="uid://coxyoxf7kfb3h" path="res://dynamic_chain.tscn" id="1_u52ul"]
+[ext_resource type="PackedScene" path="res://dynamic_chain.tscn" id="1_u52ul"]
 [ext_resource type="Material" uid="uid://copt7k7u3o4ew" path="res://stone.tres" id="1_vonw3"]
 [ext_resource type="Script" uid="uid://cfmqwtgq1lytw" path="res://cables.gd" id="3_0b4ue"]
 
@@ -53,13 +53,14 @@ shadow_enabled = true
 script = ExtResource("3_0b4ue")
 
 [node name="player_cable" parent="cables" unique_id=1116807158 node_paths=PackedStringArray("path") instance=ExtResource("1_u52ul")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.033792935, 9.105822, 0.032239288)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.034, 0.1, 0)
 path = NodePath("../Path3D")
 anchor_mode = 1
 link_length = 0.25
-damping = 1.0
+link_count = 20
+collision_radius = null
+collision_mask = null
 link_mesh = SubResource("CapsuleMesh_0b4ue")
-link_count = 8
 
 [node name="Path3D" type="Path3D" parent="cables" unique_id=57616692]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.31332755, 0)
@@ -72,5 +73,5 @@ physics_material_override = SubResource("PhysicsMaterial_0b4ue")
 material_override = ExtResource("1_vonw3")
 mesh = SubResource("PlaneMesh_5xgho")
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="StaticBody3D" unique_id=609846798]
+[node name="floor_collider" type="CollisionShape3D" parent="StaticBody3D" unique_id=609846798]
 shape = SubResource("WorldBoundaryShape3D_f2txt")
