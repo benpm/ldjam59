@@ -1,4 +1,7 @@
 {
     "godotTools.editorPath.godot4": "c:\\Program Files\\Godot\\Godot_v4.6.2-stable_win64.exe",
-    "editor.formatOnSave": true
+    "editor.formatOnSave": true,
+    "editor.autoIndentOnPaste": true,
+    "godotFormatterAndLinter.indentSpacesSize": 4,
+    "godotFormatterAndLinter.indentType": "Spaces"
 }

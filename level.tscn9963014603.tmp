@@ -1,0 +1,35 @@
+[gd_scene format=3 uid="uid://uh5m17lb4xqr"]
+
+[ext_resource type="PackedScene" uid="uid://coxyoxf7kfb3h" path="res://dynamic_chain.tscn" id="1_u52ul"]
+
+[sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_u52ul"]
+
+[sub_resource type="Sky" id="Sky_vonw3"]
+sky_material = SubResource("ProceduralSkyMaterial_u52ul")
+
+[sub_resource type="Environment" id="Environment_u52ul"]
+background_mode = 2
+sky = SubResource("Sky_vonw3")
+tonemap_mode = 2
+ssao_enabled = true
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_5xgho"]
+
+[node name="Level" type="Node3D" unique_id=1311408348]
+
+[node name="Camera3D" type="Camera3D" parent="." unique_id=419487614]
+environment = SubResource("Environment_u52ul")
+current = true
+fov = 117.7
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="." unique_id=176021552]
+transform = Transform3D(70.08, 0, 0, 0, 1.0277178, 0, 0, 0, 53.305645, 0, 0, 0)
+mesh = SubResource("PlaneMesh_5xgho")
+
+[node name="DynamicChain" parent="." unique_id=1116807158 instance=ExtResource("1_u52ul")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.033792935, 9.105822, 0.032239288)
+link_count = 8
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="." unique_id=1947049086]
+transform = Transform3D(1, 0, 0, 0, 0.70710677, 0.70710677, 0, -0.70710677, 0.70710677, 0, 0, 0)
+shadow_enabled = true

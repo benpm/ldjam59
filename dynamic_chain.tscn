@@ -4,13 +4,29 @@
 
 [sub_resource type="PhysicsMaterial" id="PhysicsMaterial_dhpxl"]
 
-[node name="DynamicChain" type="Node3D" unique_id=1116807158 node_paths=PackedStringArray("anchor", "link_container")]
+[node name="DynamicChain" type="Node3D" unique_id=1116807158 node_paths=PackedStringArray("anchor", "end_anchor", "link_container")]
 script = ExtResource("1_dhpxl")
+anchor_mode = 0
+link_mass = 0.01
 anchor = NodePath("StaticBody3D")
+end_anchor = NodePath("EndAnchor")
 link_container = NodePath("Node3D")
 metadata/_custom_type_script = "uid://c1fbnf407omuk"
 
 [node name="StaticBody3D" type="StaticBody3D" parent="." unique_id=153221936]
 physics_material_override = SubResource("PhysicsMaterial_dhpxl")
 
+[node name="Marker3D" type="Marker3D" parent="StaticBody3D" unique_id=1619312687]
+
+[node name="Label3D" type="Label3D" parent="StaticBody3D" unique_id=1572517176]
+transform = Transform3D(0.04, 0, 0, 0, 0.04, 0, 0, 0, 0.04, 0, 0, 0)
+text = "start"
+
+[node name="EndAnchor" type="StaticBody3D" parent="." unique_id=853219361]
+physics_material_override = SubResource("PhysicsMaterial_dhpxl")
+
+[node name="Marker3D2" type="Marker3D" parent="EndAnchor" unique_id=1189958633]
+
 [node name="Node3D" type="Node3D" parent="." unique_id=612302594]
+
+[connection signal="editor_state_changed" from="." to="." method="_regenerate_chain"]

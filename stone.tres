@@ -1,0 +1,10 @@
+[gd_resource type="StandardMaterial3D" format=3 uid="uid://copt7k7u3o4ew"]
+
+[ext_resource type="Texture2D" uid="uid://ix1bunvr2cp0" path="res://img/stone-1024.jpg" id="1_k7hpl"]
+
+[resource]
+albedo_color = Color(0.59765625, 0.59765625, 0.59765625, 1)
+albedo_texture = ExtResource("1_k7hpl")
+metallic = 1.0
+roughness_texture = ExtResource("1_k7hpl")
+uv1_scale = Vector3(10, 10, 10)

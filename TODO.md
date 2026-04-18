@@ -1,0 +1,5 @@
+- [ ] Create a controllable player character
+  - WASD to walk around
+  - Left click to grab
+    - Add a sphere collider as child of player, use for area detection of chain segments
+      - Put chain segments on a new physics layer: "chain"
