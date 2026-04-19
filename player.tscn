@@ -1,6 +1,7 @@
 [gd_scene format=3 uid="uid://b4xpq2r7mn1ks"]
 
 [ext_resource type="Script" uid="uid://dko1x8m5qc68v" path="res://player.gd" id="1_player"]
+[ext_resource type="Shader" path="res://radio_tower.gdshader" id="2_shader"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_player"]
 radius = 0.3
@@ -10,6 +11,15 @@ height = 1.0
 radius = 0.3
 height = 1.0
 
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_player"]
+shader = ExtResource("2_shader")
+shader_parameter/ring_speed = 3.0
+shader_parameter/ring_scale = 1.5
+shader_parameter/ring_sharpness = 0.7
+shader_parameter/quant_steps = 4.0
+shader_parameter/albedo = Color(0.2, 0.5, 0.7, 1)
+shader_parameter/ring_color = Color(0.3, 0.8, 1.0, 1)
+
 [node name="Player" type="CharacterBody3D"]
 script = ExtResource("1_player")
 
@@ -18,3 +28,4 @@ shape = SubResource("CapsuleShape3D_player")
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="."]
 mesh = SubResource("CapsuleMesh_player")
+material_override = SubResource("ShaderMaterial_player")

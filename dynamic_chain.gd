@@ -38,6 +38,8 @@ enum AnchorMode {NONE, START, END, BOTH}
 @export var end_anchor: Node3D
 @export var link_container: Node3D
 
+@export var link_material: Material
+
 @export var link_mesh: Mesh:
 	set(value):
 		link_mesh = value
@@ -95,6 +97,8 @@ func _rebuild_visuals() -> void:
 	for i in range(link_count):
 		var inst := MeshInstance3D.new()
 		inst.mesh = mesh
+		if is_instance_valid(link_material):
+			inst.material_override = link_material
 		link_container.add_child(inst)
 		_mesh_instances.append(inst)
 

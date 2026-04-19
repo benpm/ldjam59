@@ -5,6 +5,8 @@
 [ext_resource type="Material" uid="uid://copt7k7u3o4ew" path="res://stone.tres" id="1_vonw3"]
 [ext_resource type="Script" uid="uid://cfmqwtgq1lytw" path="res://cables.gd" id="3_0b4ue"]
 [ext_resource type="PackedScene" path="res://player.tscn" id="5_player"]
+[ext_resource type="Shader" path="res://radio_tower.gdshader" id="6_shader"]
+[ext_resource type="PackedScene" uid="uid://dx3m7k9p1vw8n" path="res://radio_tower.tscn" id="7_tower"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_u52ul"]
 
@@ -29,6 +31,24 @@ size = Vector2(100, 100)
 
 [sub_resource type="WorldBoundaryShape3D" id="WorldBoundaryShape3D_f2txt"]
 
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_ground"]
+shader = ExtResource("6_shader")
+shader_parameter/ring_speed = 3.0
+shader_parameter/ring_scale = 1.5
+shader_parameter/ring_sharpness = 0.7
+shader_parameter/quant_steps = 4.0
+shader_parameter/albedo = Color(0.35, 0.32, 0.28, 1)
+shader_parameter/ring_color = Color(0.3, 0.8, 1.0, 1.0)
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_cable"]
+shader = ExtResource("6_shader")
+shader_parameter/ring_speed = 3.0
+shader_parameter/ring_scale = 1.5
+shader_parameter/ring_sharpness = 0.7
+shader_parameter/quant_steps = 4.0
+shader_parameter/albedo = Color(0.75, 0.45, 0.1, 1)
+shader_parameter/ring_color = Color(0.3, 0.8, 1.0, 1.0)
+
 [node name="Level" type="Node3D" unique_id=1311408348]
 script = ExtResource("1_oi3di")
 
@@ -52,6 +72,7 @@ anchor_mode = 3
 link_length = 0.25
 link_count = 100
 link_mesh = SubResource("CapsuleMesh_0b4ue")
+link_material = SubResource("ShaderMaterial_cable")
 
 [node name="Player" parent="." unique_id=987654321 instance=ExtResource("5_player")]
 unique_name_in_owner = true
@@ -61,8 +82,11 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
 physics_material_override = SubResource("PhysicsMaterial_0b4ue")
 
 [node name="floor" type="MeshInstance3D" parent="StaticBody3D" unique_id=176021552]
-material_override = ExtResource("1_vonw3")
+material_override = SubResource("ShaderMaterial_ground")
 mesh = SubResource("PlaneMesh_5xgho")
 
 [node name="floor_collider" type="CollisionShape3D" parent="StaticBody3D" unique_id=609846798]
 shape = SubResource("WorldBoundaryShape3D_f2txt")
+
+[node name="RadioTower" parent="." unique_id=111222333 instance=ExtResource("7_tower")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5, 0, 5)
