@@ -1,10 +1,27 @@
-extends Node2D
+class_name Player extends CharacterBody3D
 
-func _ready():
-    pass
+const SPEED: float = 5.0
+const SPEED_HELD: float = 2.0
+const JUMP_VELOCITY: float = 6.0
 
-func _process(delta):
-    var input_vector = Vector2.ZERO
-    input_vector.x = Input.get_action_strength("ui_right") - Input.get_action_strength("ui_left")
-    input_vector.y = Input.get_action_strength("ui_down") - Input.get_action_strength("ui_up")
-    input_vector = input_vector.normalized()
+var holding_cable: bool = false
+
+func _physics_process(delta: float) -> void:
+	if not is_on_floor():
+		velocity += get_gravity() * delta
+
+	if Input.is_action_just_pressed("jump") and is_on_floor():
+		velocity.y = JUMP_VELOCITY
+
+	var input := Vector2(
+		Input.get_axis("move_left", "move_right"),
+		Input.get_axis("move_forward", "move_back")
+	)
+	var dir := Vector3(input.x, 0.0, input.y)
+	if dir.length_squared() > 0.0:
+		dir = dir.normalized()
+	var spd := SPEED_HELD if holding_cable else SPEED
+	velocity.x = dir.x * spd
+	velocity.z = dir.z * spd
+
+	move_and_slide()

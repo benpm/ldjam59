@@ -1,10 +1,12 @@
-[gd_scene format=3 uid="uid://coxyoxf7kfb3h"]
+[gd_scene format=3 uid="uid://bfywa7t85asas"]
 
 [ext_resource type="Script" uid="uid://c1fbnf407omuk" path="res://dynamic_chain.gd" id="1_dhpxl"]
 
 [node name="DynamicChain" type="Node3D" unique_id=1116807158 node_paths=PackedStringArray("anchor", "end_anchor", "link_container")]
 script = ExtResource("1_dhpxl")
 anchor_mode = 0
+collision_radius = null
+collision_mask = null
 anchor = NodePath("Anchor")
 end_anchor = NodePath("EndAnchor")
 link_container = NodePath("LinkContainer")

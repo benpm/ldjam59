@@ -4,6 +4,7 @@
 [ext_resource type="PackedScene" path="res://dynamic_chain.tscn" id="1_u52ul"]
 [ext_resource type="Material" uid="uid://copt7k7u3o4ew" path="res://stone.tres" id="1_vonw3"]
 [ext_resource type="Script" uid="uid://cfmqwtgq1lytw" path="res://cables.gd" id="3_0b4ue"]
+[ext_resource type="PackedScene" path="res://player.tscn" id="5_player"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_u52ul"]
 
@@ -18,14 +19,7 @@ ssao_enabled = true
 
 [sub_resource type="CapsuleMesh" id="CapsuleMesh_0b4ue"]
 radius = 0.125
-height = 0.25
-
-[sub_resource type="Curve3D" id="Curve3D_0b4ue"]
-_data = {
-"points": PackedVector3Array(0, 0, 0, 0, 0, 0, -3.2041373, 0, -2.9163535, 0, 0, 0, 0, 0, 0, -3.6998658, 0, -0.08547984, 0, 0, 0, 0, 0, 0, -2.3039975, 0, 2.0409365, 0, 0, 0, 0, 0, 0, 0.27901167, 0, 2.0148458, 0, 0, 0, 0, 0, 0, 2.6272016, 0, 1.2973429, 0, 0, 0, 0, 0, 0, 3.7621608, 0, -0.2028895, 0, 0, 0, 0, 0, 0, 3.3055673, 0, -1.7944405, 0, 0, 0, 0, 0, 0, 1.4139695, 0, -1.990123, 0, 0, 0, 0, 0, 0, 0.4616484, 0, -1.624849, 0, 0, 0, 0, 0, 0, 0.20073837, 0, -0.75080055),
-"tilts": PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
-}
-point_count = 10
+height = 0.5
 
 [sub_resource type="PhysicsMaterial" id="PhysicsMaterial_0b4ue"]
 
@@ -52,19 +46,16 @@ shadow_enabled = true
 [node name="cables" type="Node3D" parent="." unique_id=586820864]
 script = ExtResource("3_0b4ue")
 
-[node name="player_cable" parent="cables" unique_id=1116807158 node_paths=PackedStringArray("path") instance=ExtResource("1_u52ul")]
+[node name="player_cable" parent="cables" unique_id=1116807158 instance=ExtResource("1_u52ul")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.034, 0.1, 0)
-path = NodePath("../Path3D")
-anchor_mode = 1
+anchor_mode = 3
 link_length = 0.25
-link_count = 20
-collision_radius = null
-collision_mask = null
+link_count = 100
 link_mesh = SubResource("CapsuleMesh_0b4ue")
 
-[node name="Path3D" type="Path3D" parent="cables" unique_id=57616692]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.31332755, 0)
-curve = SubResource("Curve3D_0b4ue")
+[node name="Player" parent="." unique_id=987654321 instance=ExtResource("5_player")]
+unique_name_in_owner = true
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
 
 [node name="StaticBody3D" type="StaticBody3D" parent="." unique_id=1407322113]
 physics_material_override = SubResource("PhysicsMaterial_0b4ue")
