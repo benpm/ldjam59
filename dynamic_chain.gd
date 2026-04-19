@@ -22,7 +22,7 @@ enum AnchorMode {NONE, START, END, BOTH}
 		if Engine.is_editor_hint() and is_inside_tree():
 			_init_rope()
 
-@export_range(2, 100) var link_count: int = 10:
+@export_range(2, 500) var link_count: int = 10:
 	set(value):
 		link_count = value
 		if Engine.is_editor_hint() and is_inside_tree():
@@ -45,9 +45,19 @@ enum AnchorMode {NONE, START, END, BOTH}
 		link_mesh = value
 		_rebuild_visuals()
 
+@export_group("Auto Grow")
+@export var auto_grow: bool = false
+@export var grow_max_links: int = 300
+@export var grow_tension_threshold: float = 0.05
+@export var grow_sustain_frames: int = 8
+@export var grow_cooldown: float = 0.0
+
 var _points: PackedVector3Array
 var _prev_points: PackedVector3Array
 var _mesh_instances: Array[MeshInstance3D] = []
+var _taut_frames: int = 0
+var _grow_cooldown_timer: float = 0.0
+var _first_link_tension: float = 0.0
 
 
 func _ready() -> void:
@@ -108,13 +118,14 @@ func _physics_process(delta: float) -> void:
 		return
 	_simulate(delta)
 	_update_visuals()
+	if auto_grow:
+		_try_grow(delta)
 
 
 func _simulate(delta: float) -> void:
 	var n := _points.size()
 	var grav := Vector3(0, -gravity * delta * delta, 0)
 
-	# Verlet integration
 	for i in range(n):
 		if _is_anchored(i, n):
 			continue
@@ -124,7 +135,7 @@ func _simulate(delta: float) -> void:
 
 	_pin_anchors(n)
 
-	# Position-based constraint solving
+	_first_link_tension = 0.0
 	for _iter in range(constraint_iterations):
 		for i in range(link_count):
 			var diff := _points[i + 1] - _points[i]
@@ -132,6 +143,9 @@ func _simulate(delta: float) -> void:
 			if dist < 0.0001:
 				continue
 			var correction := diff * (1.0 - link_length / dist)
+			# Capture first-link stretch before any solving (first iteration only)
+			if _iter == 0 and i == 0 and dist > link_length:
+				_first_link_tension = dist - link_length
 			var a_pinned := _is_anchored(i, n)
 			var b_pinned := _is_anchored(i + 1, n)
 			if not a_pinned and not b_pinned:
@@ -147,6 +161,40 @@ func _simulate(delta: float) -> void:
 	_resolve_collisions(n)
 
 
+func _try_grow(delta: float) -> void:
+	_grow_cooldown_timer = maxf(0.0, _grow_cooldown_timer - delta)
+	if _first_link_tension > grow_tension_threshold:
+		_taut_frames += 1
+	else:
+		_taut_frames = 0
+	if _taut_frames >= grow_sustain_frames and _grow_cooldown_timer <= 0.0 and link_count < grow_max_links:
+		_add_link_at_anchor()
+		_taut_frames = 0
+		_grow_cooldown_timer = grow_cooldown
+
+
+func _add_link_at_anchor() -> void:
+	link_count += 1
+	# Insert new point at anchor position — it will be pulled out naturally
+	var new_pt := _points[0]
+	_points.insert(1, new_pt)
+	_prev_points.insert(1, new_pt)
+	if not is_instance_valid(link_container):
+		return
+	var mesh := link_mesh
+	if mesh == null:
+		var cyl := CapsuleMesh.new()
+		cyl.radius = 0.05
+		cyl.height = link_length
+		mesh = cyl
+	var inst := MeshInstance3D.new()
+	inst.mesh = mesh
+	if is_instance_valid(link_material):
+		inst.material_override = link_material
+	link_container.add_child(inst)
+	_mesh_instances.insert(0, inst)
+
+
 func _resolve_collisions(n: int) -> void:
 	var space := get_world_3d().direct_space_state
 	var ray := PhysicsRayQueryParameters3D.new()
@@ -154,7 +202,6 @@ func _resolve_collisions(n: int) -> void:
 	for i in range(n):
 		if _is_anchored(i, n):
 			continue
-		# Probe from above the point downward past it so WorldBoundaryShape3D is detected.
 		ray.from = _points[i] + Vector3(0, collision_radius, 0)
 		ray.to   = _points[i] - Vector3(0, collision_radius, 0)
 		var hit := space.intersect_ray(ray)
@@ -162,7 +209,6 @@ func _resolve_collisions(n: int) -> void:
 			continue
 		var normal: Vector3 = hit.normal
 		var target := (hit.position as Vector3) + normal * collision_radius
-		# Only push if we're on the wrong side of the surface.
 		if (_points[i] - hit.position).dot(normal) < collision_radius:
 			_points[i] = target
 			var vel := _points[i] - _prev_points[i]

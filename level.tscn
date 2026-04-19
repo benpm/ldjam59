@@ -1,12 +1,13 @@
 [gd_scene format=3 uid="uid://uh5m17lb4xqr"]
 
 [ext_resource type="Script" uid="uid://e2kgl8kik1g1" path="res://level.gd" id="1_oi3di"]
-[ext_resource type="PackedScene" path="res://dynamic_chain.tscn" id="1_u52ul"]
+[ext_resource type="PackedScene" uid="uid://bfywa7t85asas" path="res://dynamic_chain.tscn" id="1_u52ul"]
 [ext_resource type="Material" uid="uid://copt7k7u3o4ew" path="res://stone.tres" id="1_vonw3"]
 [ext_resource type="Script" uid="uid://cfmqwtgq1lytw" path="res://cables.gd" id="3_0b4ue"]
 [ext_resource type="PackedScene" path="res://player.tscn" id="5_player"]
-[ext_resource type="Shader" path="res://radio_tower.gdshader" id="6_shader"]
-[ext_resource type="PackedScene" uid="uid://dx3m7k9p1vw8n" path="res://radio_tower.tscn" id="7_tower"]
+[ext_resource type="Shader" uid="uid://wvqu3hjkm0d0" path="res://radio_tower.gdshader" id="6_shader"]
+[ext_resource type="PackedScene" path="res://radio_tower.tscn" id="7_tower"]
+[ext_resource type="Shader" path="res://posterize.gdshader" id="9_post"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_u52ul"]
 
@@ -19,11 +20,19 @@ sky = SubResource("Sky_vonw3")
 tonemap_mode = 2
 ssao_enabled = true
 
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_cable"]
+render_priority = 0
+shader = ExtResource("6_shader")
+
 [sub_resource type="CapsuleMesh" id="CapsuleMesh_0b4ue"]
 radius = 0.125
 height = 0.5
 
 [sub_resource type="PhysicsMaterial" id="PhysicsMaterial_0b4ue"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_ground"]
+render_priority = 0
+shader = ExtResource("6_shader")
 
 [sub_resource type="PlaneMesh" id="PlaneMesh_5xgho"]
 material = ExtResource("1_vonw3")
@@ -31,23 +40,9 @@ size = Vector2(100, 100)
 
 [sub_resource type="WorldBoundaryShape3D" id="WorldBoundaryShape3D_f2txt"]
 
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_ground"]
-shader = ExtResource("6_shader")
-shader_parameter/ring_speed = 3.0
-shader_parameter/ring_scale = 1.5
-shader_parameter/ring_sharpness = 0.7
-shader_parameter/quant_steps = 4.0
-shader_parameter/albedo = Color(0.35, 0.32, 0.28, 1)
-shader_parameter/ring_color = Color(0.3, 0.8, 1.0, 1.0)
-
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_cable"]
-shader = ExtResource("6_shader")
-shader_parameter/ring_speed = 3.0
-shader_parameter/ring_scale = 1.5
-shader_parameter/ring_sharpness = 0.7
-shader_parameter/quant_steps = 4.0
-shader_parameter/albedo = Color(0.75, 0.45, 0.1, 1)
-shader_parameter/ring_color = Color(0.3, 0.8, 1.0, 1.0)
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_post"]
+shader = ExtResource("9_post")
+shader_parameter/levels = 6.0
 
 [node name="Level" type="Node3D" unique_id=1311408348]
 script = ExtResource("1_oi3di")
@@ -71,8 +66,12 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.034, 0.1, 0)
 anchor_mode = 3
 link_length = 0.25
 link_count = 100
-link_mesh = SubResource("CapsuleMesh_0b4ue")
+collision_radius = 0.05
+collision_mask = 1
 link_material = SubResource("ShaderMaterial_cable")
+link_mesh = SubResource("CapsuleMesh_0b4ue")
+auto_grow = true
+grow_max_links = 400
 
 [node name="Player" parent="." unique_id=987654321 instance=ExtResource("5_player")]
 unique_name_in_owner = true
@@ -90,3 +89,14 @@ shape = SubResource("WorldBoundaryShape3D_f2txt")
 
 [node name="RadioTower" parent="." unique_id=111222333 instance=ExtResource("7_tower")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5, 0, 5)
+
+[node name="PostProcess" type="CanvasLayer" parent="." unique_id=304295065]
+layer = 100
+
+[node name="ColorRect" type="ColorRect" parent="PostProcess" unique_id=1677480077]
+material = SubResource("ShaderMaterial_post")
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2

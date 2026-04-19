@@ -1,0 +1,49 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://enemy_cable.gd" id="1_ec"]
+[ext_resource type="Script" uid="uid://c1fbnf407omuk" path="res://dynamic_chain.gd" id="2_dc"]
+[ext_resource type="Shader" uid="uid://wvqu3hjkm0d0" path="res://radio_tower.gdshader" id="3_shader"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_enemy"]
+render_priority = 0
+shader = ExtResource("3_shader")
+shader_parameter/ring_speed = 5.0
+shader_parameter/ring_scale = 2.5
+shader_parameter/ring_sharpness = 0.72
+shader_parameter/quant_steps = 4.0
+shader_parameter/albedo = Color(0.4, 0.06, 0.06, 1)
+shader_parameter/ring_color = Color(1.0, 0.15, 0.05, 1)
+
+[sub_resource type="CapsuleMesh" id="CapsuleMesh_link"]
+radius = 0.14
+height = 0.25
+
+[node name="EnemyCable" type="Node3D"]
+script = ExtResource("1_ec")
+
+[node name="Chain" type="Node3D" parent="." node_paths=PackedStringArray("anchor", "end_anchor", "link_container")]
+script = ExtResource("2_dc")
+anchor_mode = 3
+link_length = 0.25
+link_count = 40
+gravity = 9.8
+damping = 0.94
+constraint_iterations = 5
+collision_radius = 0.05
+collision_mask = 1
+anchor = NodePath("Anchor")
+end_anchor = NodePath("Tip")
+link_container = NodePath("LinkContainer")
+link_material = SubResource("ShaderMaterial_enemy")
+link_mesh = SubResource("CapsuleMesh_link")
+auto_grow = true
+grow_max_links = 80
+grow_tension_threshold = 0.05
+grow_sustain_frames = 8
+grow_cooldown = 4.0
+
+[node name="Anchor" type="Node3D" parent="Chain"]
+
+[node name="Tip" type="Node3D" parent="Chain"]
+
+[node name="LinkContainer" type="Node3D" parent="Chain"]

@@ -7,6 +7,8 @@ uniform float ring_sharpness : hint_range(0.0, 0.99) = 0.7;
 uniform float quant_steps : hint_range(2.0, 32.0) = 4.0;
 uniform vec4 albedo : source_color = vec4(0.35, 0.32, 0.28, 1.0);
 uniform vec4 ring_color : source_color = vec4(0.3, 0.8, 1.0, 1.0);
+uniform sampler2D albedo_texture : source_color, hint_default_white;
+uniform vec2 texture_scale = vec2(1.0, 1.0);
 
 varying vec3 world_pos;
 
@@ -24,7 +26,8 @@ void fragment() {
 	float ring = smoothstep(ring_sharpness, 1.0, wave);
 
 	// Posterize the base color (quantization filter)
-	vec3 base = albedo.rgb;
+	vec3 tex = texture(albedo_texture, UV * texture_scale).rgb;
+	vec3 base = albedo.rgb * tex;
 	vec3 quantized = floor(base * quant_steps + 0.5) / quant_steps;
 
 	// Off-ring: quantized and darkened in troughs
