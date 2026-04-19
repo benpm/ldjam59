@@ -1,6 +1,6 @@
 class_name EnemyCable extends Node3D
 
-enum State { HOLDING, APPROACHING, STRIKING, RETREATING }
+enum State {HOLDING, APPROACHING, STRIKING, RETREATING}
 
 const ANCHOR_FORCE: float = 3.0
 const ANCHOR_DAMPING: float = 0.90
@@ -41,15 +41,6 @@ func _physics_process(delta: float) -> void:
 	var ppos := player.global_position
 	var t := Time.get_ticks_msec() / 1000.0
 
-	# Wiggle offset — incommensurate frequencies, per-enemy random phases
-	var wx := sin(t * 0.6 + _wiggle_phases.x) * 1.0 + sin(t * 1.1 + _wiggle_phases.y) * 0.5
-	var wz := sin(t * 0.8 + _wiggle_phases.z) * 1.0 + sin(t * 0.5 + _wiggle_phases.x) * 0.4
-	var hover_target := Vector3(
-		orbit_center.x + cos(orbit_angle) * hover_radius + wx,
-		ppos.y + 0.5,
-		orbit_center.z + sin(orbit_angle) * hover_radius + wz
-	)
-
 	# Proximity check — instant strike if player walks into tip (any state except STRIKING)
 	if _state != State.STRIKING and _tip.global_position.distance_to(ppos) < PROXIMITY_STRIKE_RADIUS:
 		_state = State.STRIKING
@@ -57,15 +48,11 @@ func _physics_process(delta: float) -> void:
 
 	match _state:
 		State.HOLDING:
-			_move_anchor_toward(hover_target, ANCHOR_FORCE, delta)
 			_move_tip_toward(_anchor.global_position, ANCHOR_FORCE, delta)
 			if t >= _next_approach:
 				_state = State.APPROACHING
 
 		State.APPROACHING:
-			# Anchor slithers toward player; tip trails behind via chain
-			var approach_target := Vector3(ppos.x, hover_target.y, ppos.z)
-			_move_anchor_toward(approach_target, APPROACH_FORCE, delta)
 			_move_tip_toward(_anchor.global_position, ANCHOR_FORCE * 0.5, delta)
 			if _tip.global_position.distance_to(ppos) < APPROACH_STRIKE_RADIUS:
 				_state = State.STRIKING
@@ -73,7 +60,6 @@ func _physics_process(delta: float) -> void:
 
 		State.STRIKING:
 			# Anchor holds; tip lunges at ground level
-			_move_anchor_toward(hover_target, ANCHOR_FORCE * 0.3, delta)
 			var strike_target := Vector3(ppos.x, 0.5, ppos.z)
 			var to_target := strike_target - _tip.global_position
 			_tip_vel += to_target.normalized() * STRIKE_FORCE * delta
@@ -86,7 +72,6 @@ func _physics_process(delta: float) -> void:
 				_state = State.RETREATING
 
 		State.RETREATING:
-			_move_anchor_toward(hover_target, ANCHOR_FORCE, delta)
 			_move_tip_toward(_anchor.global_position, ANCHOR_FORCE, delta)
 			if _tip.global_position.distance_squared_to(_anchor.global_position) < 0.5:
 				_state = State.HOLDING
@@ -100,6 +85,13 @@ func _move_anchor_toward(target: Vector3, force: float, delta: float) -> void:
 
 
 func _move_tip_toward(target: Vector3, force: float, delta: float) -> void:
+	# If target is further than max reach, move target towards anchor to prevent overextension
+	var to_target := target - _anchor.global_position
+	var dist := to_target.length()
+	var max_reach := _chain.total_length() - 1.0
+	if dist > max_reach:
+		target = _anchor.global_position + to_target.normalized() * max_reach
+
 	_tip_vel += (target - _tip.global_position) * force * delta
 	_tip_vel *= TIP_DAMPING
 	_tip.global_position += _tip_vel * delta

@@ -100,8 +100,8 @@ func _rebuild_visuals() -> void:
 	var mesh := link_mesh
 	if mesh == null:
 		var cyl := CapsuleMesh.new()
-		cyl.radius = 0.05
-		cyl.height = link_length
+		cyl.radius = collision_radius * 2.0
+		cyl.height = link_length * 2.0
 		mesh = cyl
 
 	for i in range(link_count):
@@ -159,6 +159,7 @@ func _simulate(delta: float) -> void:
 		_pin_anchors(n)
 
 	_resolve_collisions(n)
+	_clamp_points_to_floor(n)
 
 
 func _try_grow(delta: float) -> void:
@@ -184,8 +185,8 @@ func _add_link_at_anchor() -> void:
 	var mesh := link_mesh
 	if mesh == null:
 		var cyl := CapsuleMesh.new()
-		cyl.radius = 0.05
-		cyl.height = link_length
+		cyl.radius = collision_radius * 2.0
+		cyl.height = link_length * 2.0
 		mesh = cyl
 	var inst := MeshInstance3D.new()
 	inst.mesh = mesh
@@ -203,7 +204,7 @@ func _resolve_collisions(n: int) -> void:
 		if _is_anchored(i, n):
 			continue
 		ray.from = _points[i] + Vector3(0, collision_radius, 0)
-		ray.to   = _points[i] - Vector3(0, collision_radius, 0)
+		ray.to = _points[i] - Vector3(0, collision_radius, 0)
 		var hit := space.intersect_ray(ray)
 		if hit.is_empty():
 			continue
@@ -214,6 +215,16 @@ func _resolve_collisions(n: int) -> void:
 			var vel := _points[i] - _prev_points[i]
 			vel -= minf(vel.dot(normal), 0.0) * normal
 			_prev_points[i] = _points[i] - vel
+
+
+func _clamp_points_to_floor(n: int) -> void:
+	var min_y := -collision_radius
+	for i in range(n):
+		if _is_anchored(i, n):
+			continue
+		if _points[i].y < min_y:
+			_points[i].y = min_y
+			_prev_points[i].y = min_y
 
 
 func _pin_anchors(n: int) -> void:
@@ -255,3 +266,6 @@ func _update_visuals() -> void:
 
 func _has_path() -> bool:
 	return is_instance_valid(path) and path.curve != null and path.curve.get_baked_length() > 0.0
+
+func total_length() -> float:
+	return link_length * link_count

@@ -4,7 +4,6 @@ extends Node3D
 @onready var player: Player = %Player
 
 const EnemyCableScene := preload("res://enemy_cable.tscn")
-const ENEMY_COUNT := 3
 
 func _ready() -> void:
 	player.died.connect(_on_player_died)
@@ -18,14 +17,6 @@ func _ready() -> void:
 	var frustum_radius := sqrt(half_h * half_h + half_v * half_v) + 1.5
 
 	var cam_ground := Vector3(camera.global_position.x, 0.0, camera.global_position.z)
-
-	for i in ENEMY_COUNT:
-		var e: EnemyCable = EnemyCableScene.instantiate()
-		add_child(e)
-		e.player = player
-		e.orbit_center = cam_ground
-		e.hover_radius = frustum_radius
-		e.orbit_angle = float(i) / ENEMY_COUNT * TAU
 
 func _on_player_died() -> void:
 	get_tree().reload_current_scene()
