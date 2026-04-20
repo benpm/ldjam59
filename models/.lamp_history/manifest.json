@@ -1,0 +1,18 @@
+{
+    "parent_file": "C:\\Users\\ben\\projects\\ldjam59\\models\\lamp.blend",
+    "versions": [
+        {
+            "id": "autosave",
+            "timestamp": "2026-04-19 23:47:40",
+            "note": "Auto Save",
+            "thumbnail": "autosave/thumbnail.png",
+            "blend": "autosave/snapshot.blend_snapshot",
+            "object_count": 3,
+            "file_size": 111435,
+            "is_protected": false,
+            "tag": "NONE"
+        }
+    ],
+    "schema_version": 1,
+    "project_uuid": "5cf5e2c2-457e-4e9c-bc2a-0d0d49682ec5"
+}

@@ -30,6 +30,7 @@ enum AnchorMode {NONE, START, END, BOTH}
 
 @export var gravity: float = 9.8
 @export var damping: float = 0.98
+@export var friction: float = 0.0
 @export_range(1, 20) var constraint_iterations: int = 5
 @export var collision_radius: float = 0.05
 @export_flags_3d_physics var collision_mask: int = 1
@@ -124,6 +125,8 @@ func _physics_process(delta: float) -> void:
 
 func _simulate(delta: float) -> void:
 	var n := _points.size()
+	if n < 2:
+		return
 	var grav := Vector3(0, -gravity * delta * delta, 0)
 
 	for i in range(n):
@@ -137,7 +140,7 @@ func _simulate(delta: float) -> void:
 
 	_first_link_tension = 0.0
 	for _iter in range(constraint_iterations):
-		for i in range(link_count):
+		for i in range(n - 1):
 			var diff := _points[i + 1] - _points[i]
 			var dist := diff.length()
 			if dist < 0.0001:
@@ -193,6 +196,7 @@ func _add_link_at_anchor() -> void:
 	if is_instance_valid(link_material):
 		inst.material_override = link_material
 	link_container.add_child(inst)
+	inst.set_instance_shader_parameter("chain_anchor_pos", _points[0])
 	_mesh_instances.insert(0, inst)
 
 
@@ -262,6 +266,7 @@ func _update_visuals() -> void:
 		var right := ref.cross(up).normalized()
 		var fwd := up.cross(right).normalized()
 		inst.global_transform = Transform3D(Basis(right, up, -fwd), (a + b) * 0.5)
+		inst.set_instance_shader_parameter("chain_anchor_pos", _points[0])
 
 
 func _has_path() -> bool:

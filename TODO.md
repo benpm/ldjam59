@@ -21,12 +21,14 @@ You are the last hope to reconnect power to the radio transmitters. You must con
       4. commit and push, resolve merge conflicts if they are simple
  -->
 
-- [x] The player_cable is no longer able to be picked up. Fix the bug, also, its now bound to E, so make a small text box appear saying to press E
-- [x] Make the enemy cables target somewhere near the player, some distance away in a changing direction via cos() and sin(), angle slowly changing. If player gets close enough, very quickly snap to the player to attack
-- [x] While holding the cable, if the player approaches the a tower, indicate that the player can press E to plug the cable into the tower. This should make the tower light up yellow and cease to make waves via the shader
+- [ ] show "interaction_indicator" game object on screen when player is in collision with the interaction_area child of the chain. also when the player is intersecting, allow the player_chain to be picked up. make sure to disable this behavior for the enemies, which also use DynamicChain
+- [ ] 
 
 ---
 
+- [x] The player_cable is no longer able to be picked up. Fix the bug, also, its now bound to E, so make a small text box appear saying to press E
+- [x] Make the enemy cables target somewhere near the player, some distance away in a changing direction via cos() and sin(), angle slowly changing. If player gets close enough, very quickly snap to the player to attack
+- [x] While holding the cable, if the player approaches the a tower, indicate that the player can press E to plug the cable into the tower. This should make the tower light up yellow and cease to make waves via the shader
 - [x] Make the camera follow the player, but only in the horizontal direction. Make it orbit a central point many units away, making a wide circle. The player's motion follows the camera, so that pressing and holding the right arrow key will actually make the player travel back to their original point, if held down long enough. The camera's distance from the central point should remain constant. The central point's position should be visualized, as well as the circular path the camera will track along.
 
 - [x] Make the jump action into a dodge move, where the player leaps in the direction they were last moving as well as jumping upwards

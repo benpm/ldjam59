@@ -2,11 +2,12 @@
 
 [ext_resource type="Script" uid="uid://c1fbnf407omuk" path="res://dynamic_chain.gd" id="1_dhpxl"]
 
+[sub_resource type="SphereShape3D" id="SphereShape3D_dhpxl"]
+radius = 1.0
+
 [node name="DynamicChain" type="Node3D" unique_id=1116807158 node_paths=PackedStringArray("anchor", "end_anchor", "link_container")]
 script = ExtResource("1_dhpxl")
 anchor_mode = 0
-collision_radius = null
-collision_mask = null
 anchor = NodePath("Anchor")
 end_anchor = NodePath("EndAnchor")
 link_container = NodePath("LinkContainer")
@@ -15,5 +16,10 @@ metadata/_custom_type_script = "uid://c1fbnf407omuk"
 [node name="Anchor" type="Node3D" parent="." unique_id=153221936]
 
 [node name="EndAnchor" type="Node3D" parent="." unique_id=853219361]
+
+[node name="StaticBody3D" type="Area3D" parent="EndAnchor" unique_id=1310477347]
+
+[node name="interaction_area" type="CollisionShape3D" parent="EndAnchor/StaticBody3D" unique_id=1414614201]
+shape = SubResource("SphereShape3D_dhpxl")
 
 [node name="LinkContainer" type="Node3D" parent="." unique_id=612302594]

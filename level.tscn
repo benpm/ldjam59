@@ -6,12 +6,12 @@
 [ext_resource type="Script" uid="uid://cfmqwtgq1lytw" path="res://cables.gd" id="3_0b4ue"]
 [ext_resource type="PackedScene" uid="uid://b4xpq2r7mn1ks" path="res://player.tscn" id="5_player"]
 [ext_resource type="PackedScene" uid="uid://bki6s65yvuspk" path="res://models/lamp.glb" id="6_2orkt"]
-[ext_resource type="Shader" path="res://surface.gdshader" id="6_shader"]
+[ext_resource type="Shader" uid="uid://wvqu3hjkm0d0" path="res://radar.gdshader" id="6_shader"]
 [ext_resource type="PackedScene" uid="uid://dx3m7lap1vw8n" path="res://radio_tower.tscn" id="7_tower"]
 [ext_resource type="Texture2D" uid="uid://ix1bunvr2cp0" path="res://img/stone-1024.jpg" id="8_aicyk"]
 [ext_resource type="PackedScene" uid="uid://cxt5oklk4bc5j" path="res://enemy_cable.tscn" id="9_i2t4f"]
 [ext_resource type="Shader" uid="uid://cosyw0iutayvd" path="res://posterize.gdshader" id="9_post"]
-[ext_resource type="Shader" path="res://surface.gdshader" id="10_chain"]
+[ext_resource type="Shader" uid="uid://bp4q71fgf4n71" path="res://chain.gdshader" id="10_chain"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_u52ul"]
 
@@ -27,30 +27,28 @@ ssao_enabled = true
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_cable"]
 render_priority = 0
 shader = ExtResource("10_chain")
-shader_parameter/ring_speed = 2.0
-shader_parameter/ring_spacing = 4.0
-shader_parameter/ring_width = 0.25
-shader_parameter/ring_sharpness = 0.5
+shader_parameter/ring_speed = 3.0
+shader_parameter/ring_scale = 1.5
+shader_parameter/ring_sharpness = 0.7
 shader_parameter/quant_steps = 4.0
 shader_parameter/albedo = Color(0.35, 0.32, 0.28, 1)
 shader_parameter/ring_color = Color(0.3, 0.8, 1, 1)
 shader_parameter/texture_scale = Vector2(1, 1)
 shader_parameter/fade_distance = 2.5
-shader_parameter/overlay = 0.0
 
 [sub_resource type="PhysicsMaterial" id="PhysicsMaterial_0b4ue"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_ground"]
 render_priority = 0
 shader = ExtResource("6_shader")
-shader_parameter/ring_speed = 0.9
-shader_parameter/ring_spacing = 3.73
-shader_parameter/ring_width = 0.1
-shader_parameter/ring_sharpness = 0.2
+shader_parameter/ring_speed = 1.5350000729125
+shader_parameter/ring_scale = 1.68600007682512
+shader_parameter/ring_sharpness = 0.9900000095367401
+shader_parameter/quant_steps = 4.0
+shader_parameter/albedo = Color(0.35, 0.32, 0.28, 1)
 shader_parameter/ring_color = Color(0.3, 0.8, 1, 1)
 shader_parameter/albedo_texture = ExtResource("8_aicyk")
-shader_parameter/texture_scale = Vector2(10, 10)
-shader_parameter/overlay = 1.0
+shader_parameter/texture_scale = Vector2(1, 1)
 
 [sub_resource type="PlaneMesh" id="PlaneMesh_5xgho"]
 material = ExtResource("1_vonw3")
@@ -109,7 +107,7 @@ spot_angle = 21.15648
 physics_material_override = SubResource("PhysicsMaterial_0b4ue")
 
 [node name="floor" type="MeshInstance3D" parent="StaticBody3D" unique_id=176021552]
-material_overlay = SubResource("ShaderMaterial_ground")
+material_override = SubResource("ShaderMaterial_ground")
 mesh = SubResource("PlaneMesh_5xgho")
 
 [node name="floor_collider" type="CollisionShape3D" parent="StaticBody3D" unique_id=609846798]
