@@ -20,10 +20,13 @@ You are the last hope to reconnect power to the radio transmitters. You must con
       3. mark task as done, copy it to the Completed section below
       4. commit and push, resolve merge conflicts if they are simple
  -->
-
+- [ ] Create a menu scene with a play button and a volume slider
+- [ ] Create a pause menu
+- [ ] Camera motion should have a threshold zone the player needs to move some X units past in order to trigger the camera to move, only if the player is not already in that zone. Otherwise, the player needs to move outside of the threshold zone for camera motion to be "armed" - this should prevent the camera from moving constantly back and forth in an annoying way the player is on the edge
 
 ---
 
+- [x] The anchors of enemy cables should only move once in a while
 - [x] The player_cable is no longer able to be picked up. Fix the bug, also, its now bound to E, so make a small text box appear saying to press E
 - [x] Make the enemy cables target somewhere near the player, some distance away in a changing direction via cos() and sin(), angle slowly changing. If player gets close enough, very quickly snap to the player to attack
 - [x] While holding the cable, if the player approaches the a tower, indicate that the player can press E to plug the cable into the tower. This should make the tower light up yellow and cease to make waves via the shader

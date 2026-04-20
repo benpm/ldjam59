@@ -15,8 +15,10 @@ const APPROACH_STRIKE_RADIUS: float = 4.0
 const STRIKE_INTERVAL_MIN: float = 2.0
 const STRIKE_INTERVAL_MAX: float = 6.0
 const ORBIT_DIST: float = 4.5
-const ORBIT_SPEED: float = 0.7
 const SNAP_RADIUS: float = 2.2
+const ANCHOR_MOVE_INTERVAL_MIN: float = 4.0
+const ANCHOR_MOVE_INTERVAL_MAX: float = 8.0
+const ANCHOR_SETTLE_THRESHOLD: float = 0.3
 
 @export var chain_length: float = 10.0:
 	set(value):
@@ -38,6 +40,9 @@ var _wiggle_phases := Vector3.ZERO
 var _range_indicator: MeshInstance3D
 var _orbit_angle: float = 0.0
 var _is_snap: bool = false
+var _anchor_target: Vector3 = Vector3.ZERO
+var _anchor_moving: bool = false
+var _next_anchor_move: float = 0.0
 
 
 func _ready() -> void:
@@ -47,6 +52,8 @@ func _ready() -> void:
 	_chain.link_count = roundi(chain_length / _chain.link_length) * 2
 	_wiggle_phases = Vector3(randf() * TAU, randf() * TAU, randf() * TAU)
 	_orbit_angle = randf() * TAU
+	_anchor_target = _anchor.global_position
+	_schedule_anchor_move()
 	_schedule_approach()
 
 
@@ -74,14 +81,21 @@ func _physics_process(delta: float) -> void:
 	var ppos := player.global_position
 	var t := Time.get_ticks_msec() / 1000.0
 
-	# Orbit anchor around player
-	_orbit_angle += ORBIT_SPEED * delta
-	var orbit_target := Vector3(
-		ppos.x + cos(_orbit_angle) * ORBIT_DIST,
-		0.0,
-		ppos.z + sin(_orbit_angle) * ORBIT_DIST
-	)
-	_move_anchor_toward(orbit_target, ANCHOR_FORCE, delta)
+	# Move anchor to a new spot near the player once in a while
+	if t >= _next_anchor_move and not _anchor_moving:
+		_anchor_moving = true
+		_orbit_angle = randf() * TAU
+		_anchor_target = Vector3(
+			ppos.x + cos(_orbit_angle) * ORBIT_DIST,
+			0.0,
+			ppos.z + sin(_orbit_angle) * ORBIT_DIST
+		)
+	if _anchor_moving:
+		_move_anchor_toward(_anchor_target, ANCHOR_FORCE, delta)
+		if _anchor.global_position.distance_to(_anchor_target) < ANCHOR_SETTLE_THRESHOLD:
+			_anchor_moving = false
+			_anchor_vel = Vector3.ZERO
+			_schedule_anchor_move()
 
 	# Snap attack when player walks close to the anchor
 	if _state != State.STRIKING and _anchor.global_position.distance_to(ppos) < SNAP_RADIUS:
@@ -148,3 +162,7 @@ func _move_tip_toward(target: Vector3, force: float, delta: float) -> void:
 
 func _schedule_approach() -> void:
 	_next_approach = Time.get_ticks_msec() / 1000.0 + randf_range(STRIKE_INTERVAL_MIN, STRIKE_INTERVAL_MAX)
+
+
+func _schedule_anchor_move() -> void:
+	_next_anchor_move = Time.get_ticks_msec() / 1000.0 + randf_range(ANCHOR_MOVE_INTERVAL_MIN, ANCHOR_MOVE_INTERVAL_MAX)
