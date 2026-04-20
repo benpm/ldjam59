@@ -1,6 +1,7 @@
 [gd_scene format=3 uid="uid://uh5m17lb4xqr"]
 
 [ext_resource type="Script" uid="uid://e2kgl8kik1g1" path="res://level.gd" id="1_oi3di"]
+[ext_resource type="PackedScene" path="res://pause_menu.tscn" id="10_pause"]
 [ext_resource type="PackedScene" uid="uid://bfywa7t85asas" path="res://dynamic_chain.tscn" id="1_u52ul"]
 [ext_resource type="Material" uid="uid://copt7k7u3o4ew" path="res://stone.tres" id="1_vonw3"]
 [ext_resource type="Script" uid="uid://cfmqwtgq1lytw" path="res://cables.gd" id="3_0b4ue"]
@@ -151,3 +152,5 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.1651833, 0, -5.8217955)
 
 [node name="EnemyCable3" parent="enemies_root" unique_id=550732649 instance=ExtResource("9_i2t4f")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.0050576, 0, -5.0362983)
+
+[node name="PauseMenu" parent="." instance=ExtResource("10_pause")]
