@@ -1,65 +1,80 @@
 extends Node3D
 
-@export var orbit_radius: float = 1000.0
-@export var camera_smoothing: float = 6.0
+@export var transition_time: float = 0.45
+@export var edge_threshold: float = 0.38
 
 @onready var camera: Camera3D = %camera
 @onready var player: Player = %Player
 
 const EnemyCableScene := preload("res://enemy_cable.tscn")
 
-var orbit_center: Vector3
-var camera_height: float
-var _cam_angle: float = 0.0
+var _cam_focus: Vector3 = Vector3.ZERO
+var _cam_offset: Vector3
+var _page_size: Vector2
+var _look_target: Vector3
+var _tween: Tween
+var _focus_marker: MeshInstance3D
 
 func _ready() -> void:
 	player.died.connect(_on_player_died)
 	for child in $enemies_root.get_children():
 		if child is EnemyCable:
 			child.player = player
-	_compute_orbit()
-	_init_camera_angle()
+	_init_camera()
 	_build_visualization()
 
-func _compute_orbit() -> void:
-	camera_height = camera.global_position.y
-	var cam_flat := Vector2(camera.global_position.x, camera.global_position.z)
-	var player_flat := Vector2(player.global_position.x, player.global_position.z)
-	var to_player := player_flat - cam_flat
-	var dir := to_player.normalized() if to_player.length_squared() > 0.0 else Vector2(0.0, -1.0)
-	var oc := cam_flat + dir * orbit_radius
-	orbit_center = Vector3(oc.x, 0.0, oc.y)
+func _init_camera() -> void:
+	_cam_focus = Vector3(player.global_position.x, 0.0, player.global_position.z)
+	_cam_offset = camera.global_position - _cam_focus
+	_look_target = _cam_focus
 
-func _init_camera_angle() -> void:
-	var flat := Vector2(
-		player.global_position.x - orbit_center.x,
-		player.global_position.z - orbit_center.z
-	)
-	_cam_angle = flat.angle()
+	var dist := _cam_offset.length()
+	var half_fov := deg_to_rad(camera.fov * 0.5)
+	var half_extent := dist * tan(half_fov)
+	var vp := get_viewport().get_visible_rect().size
+	var aspect := vp.x / vp.y if vp.y > 0.0 else 1.778
+	_page_size = Vector2(half_extent * aspect * 2.0, half_extent * 2.0)
 
-func _process(delta: float) -> void:
-	var flat := Vector2(
-		player.global_position.x - orbit_center.x,
-		player.global_position.z - orbit_center.z
-	)
-	var target_angle := flat.angle()
-	_cam_angle = lerp_angle(_cam_angle, target_angle, delta * camera_smoothing)
+func _process(_delta: float) -> void:
+	camera.look_at(_look_target, Vector3.UP)
+	_update_player_dirs()
 
-	camera.global_position = Vector3(
-		orbit_center.x + cos(_cam_angle) * orbit_radius,
-		camera_height,
-		orbit_center.z + sin(_cam_angle) * orbit_radius
-	)
-	camera.look_at(player.global_position, Vector3.UP)
+	if _tween and _tween.is_running():
+		return
 
-	# Camera basis after look_at — flatten to horizontal plane
+	var dx := player.global_position.x - _cam_focus.x
+	var dz := player.global_position.z - _cam_focus.z
+	var page_dx := 0.0
+	var page_dz := 0.0
+	if abs(dx) > _page_size.x * 0.5 * (1.0 - edge_threshold):
+		page_dx = sign(dx) * _page_size.x
+	if abs(dz) > _page_size.y * 0.5 * (1.0 - edge_threshold):
+		page_dz = sign(dz) * _page_size.y
+
+	if page_dx != 0.0 or page_dz != 0.0:
+		_page(Vector3(page_dx, 0.0, page_dz))
+
+func _page(offset: Vector3) -> void:
+	var new_focus := _cam_focus + offset
+	_cam_focus = new_focus
+
+	if _tween:
+		_tween.kill()
+	_tween = create_tween()
+	_tween.set_ease(Tween.EASE_IN_OUT)
+	_tween.set_trans(Tween.TRANS_CUBIC)
+	_tween.tween_property(camera, "global_position", new_focus + _cam_offset, transition_time)
+	_tween.parallel().tween_property(self, "_look_target", new_focus, transition_time)
+
+func _update_player_dirs() -> void:
 	var cam_right := camera.global_basis.x
 	cam_right.y = 0.0
 	cam_right = cam_right.normalized()
 	var cam_fwd := -camera.global_basis.z
 	cam_fwd.y = 0.0
 	cam_fwd = cam_fwd.normalized()
-
+	player.camera_right = cam_right
+	player.camera_forward = cam_fwd
 
 func _build_visualization() -> void:
 	var unshaded := StandardMaterial3D.new()
@@ -67,27 +82,14 @@ func _build_visualization() -> void:
 	unshaded.albedo_color = Color(1.0, 0.9, 0.0, 0.8)
 	unshaded.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
 
-	# Center point marker
-	var center_node := MeshInstance3D.new()
+	_focus_marker = MeshInstance3D.new()
 	var sphere := SphereMesh.new()
 	sphere.radius = 0.4
 	sphere.height = 0.8
-	center_node.mesh = sphere
-	center_node.material_override = unshaded
-	center_node.global_position = orbit_center
-	add_child(center_node)
-
-	# Orbit ring at camera height
-	var ring_node := MeshInstance3D.new()
-	var torus := TorusMesh.new()
-	torus.inner_radius = orbit_radius - 0.15
-	torus.outer_radius = orbit_radius + 0.15
-	torus.rings = 4
-	torus.ring_segments = 6
-	ring_node.mesh = torus
-	ring_node.material_override = unshaded
-	ring_node.global_position = Vector3(orbit_center.x, camera_height, orbit_center.z)
-	add_child(ring_node)
+	_focus_marker.mesh = sphere
+	_focus_marker.material_override = unshaded
+	_focus_marker.global_position = _cam_focus
+	add_child(_focus_marker)
 
 func _on_player_died() -> void:
 	get_tree().reload_current_scene()
