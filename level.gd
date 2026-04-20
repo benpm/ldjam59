@@ -2,7 +2,7 @@ extends Node3D
 
 @export var transition_time: float = 0.45
 @export var edge_threshold: float = 0.38
-@export var arm_threshold: float = 0.25
+@export var arm_threshold: float = 0.6
 
 @onready var camera: Camera3D = %camera
 @onready var player: Player = %Player
@@ -52,18 +52,20 @@ func _process(_delta: float) -> void:
 	var half_x := _page_size.x * 0.5
 	var half_z := _page_size.y * 0.5
 
-	# Re-arm when player returns inside the safe zone
-	if abs(dx) < half_x * (1.0 - arm_threshold):
+	# Re-arm only when player is well inside the trigger boundary
+	var trigger_x := half_x * (1.0 - edge_threshold)
+	var trigger_z := half_z * (1.0 - edge_threshold)
+	if abs(dx) < trigger_x * arm_threshold:
 		_page_armed_x = true
-	if abs(dz) < half_z * (1.0 - arm_threshold):
+	if abs(dz) < trigger_z * arm_threshold:
 		_page_armed_z = true
 
 	var page_dx := 0.0
 	var page_dz := 0.0
-	if _page_armed_x and abs(dx) > half_x * (1.0 - edge_threshold):
+	if _page_armed_x and abs(dx) > trigger_x:
 		page_dx = sign(dx) * _page_size.x
 		_page_armed_x = false
-	if _page_armed_z and abs(dz) > half_z * (1.0 - edge_threshold):
+	if _page_armed_z and abs(dz) > trigger_z:
 		page_dz = sign(dz) * _page_size.y
 		_page_armed_z = false
 
