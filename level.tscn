@@ -5,10 +5,13 @@
 [ext_resource type="Material" uid="uid://copt7k7u3o4ew" path="res://stone.tres" id="1_vonw3"]
 [ext_resource type="Script" uid="uid://cfmqwtgq1lytw" path="res://cables.gd" id="3_0b4ue"]
 [ext_resource type="PackedScene" uid="uid://b4xpq2r7mn1ks" path="res://player.tscn" id="5_player"]
-[ext_resource type="Shader" uid="uid://wvqu3hjkm0d0" path="res://radio_tower.gdshader" id="6_shader"]
+[ext_resource type="PackedScene" uid="uid://bki6s65yvuspk" path="res://models/lamp.glb" id="6_2orkt"]
+[ext_resource type="Shader" path="res://surface.gdshader" id="6_shader"]
 [ext_resource type="PackedScene" uid="uid://dx3m7lap1vw8n" path="res://radio_tower.tscn" id="7_tower"]
+[ext_resource type="Texture2D" uid="uid://ix1bunvr2cp0" path="res://img/stone-1024.jpg" id="8_aicyk"]
 [ext_resource type="PackedScene" uid="uid://cxt5oklk4bc5j" path="res://enemy_cable.tscn" id="9_i2t4f"]
 [ext_resource type="Shader" uid="uid://cosyw0iutayvd" path="res://posterize.gdshader" id="9_post"]
+[ext_resource type="Shader" path="res://surface.gdshader" id="10_chain"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_u52ul"]
 
@@ -23,27 +26,31 @@ ssao_enabled = true
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_cable"]
 render_priority = 0
-shader = ExtResource("6_shader")
-shader_parameter/ring_speed = 3.0
-shader_parameter/ring_scale = 1.5
-shader_parameter/ring_sharpness = 0.7
+shader = ExtResource("10_chain")
+shader_parameter/ring_speed = 2.0
+shader_parameter/ring_spacing = 4.0
+shader_parameter/ring_width = 0.25
+shader_parameter/ring_sharpness = 0.5
 shader_parameter/quant_steps = 4.0
 shader_parameter/albedo = Color(0.35, 0.32, 0.28, 1)
 shader_parameter/ring_color = Color(0.3, 0.8, 1, 1)
 shader_parameter/texture_scale = Vector2(1, 1)
+shader_parameter/fade_distance = 2.5
+shader_parameter/overlay = 0.0
 
 [sub_resource type="PhysicsMaterial" id="PhysicsMaterial_0b4ue"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_ground"]
 render_priority = 0
 shader = ExtResource("6_shader")
-shader_parameter/ring_speed = 3.0
-shader_parameter/ring_scale = 1.5
-shader_parameter/ring_sharpness = 0.7
-shader_parameter/quant_steps = 4.0
-shader_parameter/albedo = Color(0.35, 0.32, 0.28, 1)
+shader_parameter/ring_speed = 0.9
+shader_parameter/ring_spacing = 3.73
+shader_parameter/ring_width = 0.1
+shader_parameter/ring_sharpness = 0.2
 shader_parameter/ring_color = Color(0.3, 0.8, 1, 1)
-shader_parameter/texture_scale = Vector2(1, 1)
+shader_parameter/albedo_texture = ExtResource("8_aicyk")
+shader_parameter/texture_scale = Vector2(10, 10)
+shader_parameter/overlay = 1.0
 
 [sub_resource type="PlaneMesh" id="PlaneMesh_5xgho"]
 material = ExtResource("1_vonw3")
@@ -55,15 +62,18 @@ size = Vector2(100, 100)
 shader = ExtResource("9_post")
 shader_parameter/levels = 6.0
 
+[sub_resource type="LabelSettings" id="LabelSettings_aicyk"]
+font_size = 94
+
 [node name="Level" type="Node3D" unique_id=1311408348]
 script = ExtResource("1_oi3di")
 
 [node name="camera" type="Camera3D" parent="." unique_id=419487614]
 unique_name_in_owner = true
-transform = Transform3D(1, 0, 0, 0, 0.38268346, 0.9238795, 0, -0.92387956, 0.38268346, 0, 50, 20.192526)
+transform = Transform3D(1, 0, 0, 0, 0.34202015, 0.9396926, 0, -0.9396926, 0.34202015, 0, 150, 62.658)
 environment = SubResource("Environment_u52ul")
 current = true
-fov = 14.53118
+fov = 8.0
 
 [node name="DirectionalLight3D" type="DirectionalLight3D" parent="." unique_id=1947049086]
 transform = Transform3D(1, 0, 0, 0, 0.70710677, 0.70710677, 0, -0.70710677, 0.70710677, 0, 0, 0)
@@ -77,8 +87,6 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.034, 0.1, 0)
 anchor_mode = 3
 link_length = 0.25
 link_count = 100
-collision_radius = 0.05
-collision_mask = 1
 link_material = SubResource("ShaderMaterial_cable")
 auto_grow = true
 grow_max_links = 400
@@ -87,11 +95,21 @@ grow_max_links = 400
 unique_name_in_owner = true
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
 
+[node name="lamp" parent="." unique_id=512755931 instance=ExtResource("6_2orkt")]
+transform = Transform3D(0.07, 0, 0, 0, 0.07, 0, 0, 0, 0.07, -1.4898174, 1.697824, -3.4369397)
+
+[node name="SpotLight3D" type="SpotLight3D" parent="lamp" unique_id=684346313]
+transform = Transform3D(1, 0, 0, 0, -4.371139e-08, 1, 0, -1, -4.371139e-08, 0, 12.5621395, 8.276241)
+light_energy = 4.745
+light_size = 0.183
+shadow_enabled = true
+spot_angle = 21.15648
+
 [node name="StaticBody3D" type="StaticBody3D" parent="." unique_id=1407322113]
 physics_material_override = SubResource("PhysicsMaterial_0b4ue")
 
 [node name="floor" type="MeshInstance3D" parent="StaticBody3D" unique_id=176021552]
-material_override = SubResource("ShaderMaterial_ground")
+material_overlay = SubResource("ShaderMaterial_ground")
 mesh = SubResource("PlaneMesh_5xgho")
 
 [node name="floor_collider" type="CollisionShape3D" parent="StaticBody3D" unique_id=609846798]
@@ -110,6 +128,20 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+
+[node name="CenterContainer" type="CenterContainer" parent="PostProcess" unique_id=36826184]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="interaction_indicator" type="Label" parent="PostProcess/CenterContainer" unique_id=1655068889]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 4
+text = "E"
+label_settings = SubResource("LabelSettings_aicyk")
 
 [node name="enemies_root" type="Node3D" parent="." unique_id=273579155]
 

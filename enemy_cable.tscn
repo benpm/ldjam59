@@ -2,20 +2,23 @@
 
 [ext_resource type="Script" uid="uid://dllqjro38u2cw" path="res://enemy_cable.gd" id="1_ec"]
 [ext_resource type="Script" uid="uid://c1fbnf407omuk" path="res://dynamic_chain.gd" id="2_dc"]
-[ext_resource type="Shader" uid="uid://wvqu3hjkm0d0" path="res://radio_tower.gdshader" id="3_shader"]
+[ext_resource type="Shader" path="res://surface.gdshader" id="3_shader"]
 [ext_resource type="Texture2D" uid="uid://mwqqdi0owbq6" path="res://icon.svg" id="4_we4q5"]
-[ext_resource type="Script" uid="uid://dggv0ha6sdbn2" path="res://hidden.gd" id="5_2r150"]
+[ext_resource type="Script" path="res://hidden.gd" id="5_2r150"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_enemy"]
 render_priority = 0
 shader = ExtResource("3_shader")
-shader_parameter/ring_speed = 5.0
-shader_parameter/ring_scale = 2.5
-shader_parameter/ring_sharpness = 0.72
+shader_parameter/ring_speed = 2.0
+shader_parameter/ring_spacing = 2.5
+shader_parameter/ring_width = 0.2
+shader_parameter/ring_sharpness = 0.4
 shader_parameter/quant_steps = 4.0
 shader_parameter/albedo = Color(0.4, 0.06, 0.06, 1)
 shader_parameter/ring_color = Color(1, 0.15, 0.05, 1)
 shader_parameter/texture_scale = Vector2(1, 1)
+shader_parameter/fade_distance = 2.5
+shader_parameter/overlay = 0.0
 
 [node name="EnemyCable" type="Node3D" unique_id=1556095341]
 script = ExtResource("1_ec")

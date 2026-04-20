@@ -43,12 +43,13 @@ func _do_connect() -> void:
 	var cables := get_tree().get_first_node_in_group("cables_root")
 	if cables:
 		cables.attach_to(global_position + Vector3(0, 0.2, 0))
-	# Yellow, no waves
 	for child in get_children():
 		if child is MeshInstance3D:
-			var mat := child.material_override as ShaderMaterial
-			if mat:
-				mat.set_shader_parameter("albedo", Color(1.0, 0.85, 0.0, 1.0))
-				mat.set_shader_parameter("ring_speed", 0.0)
-				mat.set_shader_parameter("ring_color", Color(1.0, 0.85, 0.0, 1.0))
+			var base_mat := child.material_override as StandardMaterial3D
+			if base_mat:
+				base_mat.albedo_color = Color(1.0, 0.85, 0.0, 1.0)
+			var ring_mat := child.material_overlay as ShaderMaterial
+			if ring_mat:
+				ring_mat.set_shader_parameter("ring_speed", 0.0)
+				ring_mat.set_shader_parameter("ring_color", Color(1.0, 0.85, 0.0, 1.0))
 	get_viewport().set_input_as_handled()
