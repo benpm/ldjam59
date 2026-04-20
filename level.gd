@@ -38,6 +38,8 @@ func _init_camera() -> void:
 func _process(_delta: float) -> void:
 	camera.look_at(_look_target, Vector3.UP)
 	_update_player_dirs()
+	if is_instance_valid(_focus_marker):
+		_focus_marker.global_position = _cam_focus
 
 	if _tween and _tween.is_running():
 		return
