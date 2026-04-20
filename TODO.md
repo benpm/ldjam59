@@ -21,8 +21,6 @@ You are the last hope to reconnect power to the radio transmitters. You must con
       4. commit and push, resolve merge conflicts if they are simple
  -->
 
-- [ ] show "interaction_indicator" game object on screen when player is in collision with the interaction_area child of the chain. also when the player is intersecting, allow the player_chain to be picked up. make sure to disable this behavior for the enemies, which also use DynamicChain
-- [ ] 
 
 ---
 

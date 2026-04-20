@@ -3,3 +3,5 @@
 /android/
 *.tmp
 *.blend1
+*_history
+models/.lamp_history
