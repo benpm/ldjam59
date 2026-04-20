@@ -2,6 +2,7 @@ extends Node3D
 
 @export var transition_time: float = 0.45
 @export var edge_threshold: float = 0.38
+@export var arm_threshold: float = 0.25
 
 @onready var camera: Camera3D = %camera
 @onready var player: Player = %Player
@@ -14,6 +15,8 @@ var _page_size: Vector2
 var _look_target: Vector3
 var _tween: Tween
 var _focus_marker: MeshInstance3D
+var _page_armed_x: bool = true
+var _page_armed_z: bool = true
 
 func _ready() -> void:
 	player.died.connect(_on_player_died)
@@ -46,12 +49,23 @@ func _process(_delta: float) -> void:
 
 	var dx := player.global_position.x - _cam_focus.x
 	var dz := player.global_position.z - _cam_focus.z
+	var half_x := _page_size.x * 0.5
+	var half_z := _page_size.y * 0.5
+
+	# Re-arm when player returns inside the safe zone
+	if abs(dx) < half_x * (1.0 - arm_threshold):
+		_page_armed_x = true
+	if abs(dz) < half_z * (1.0 - arm_threshold):
+		_page_armed_z = true
+
 	var page_dx := 0.0
 	var page_dz := 0.0
-	if abs(dx) > _page_size.x * 0.5 * (1.0 - edge_threshold):
+	if _page_armed_x and abs(dx) > half_x * (1.0 - edge_threshold):
 		page_dx = sign(dx) * _page_size.x
-	if abs(dz) > _page_size.y * 0.5 * (1.0 - edge_threshold):
+		_page_armed_x = false
+	if _page_armed_z and abs(dz) > half_z * (1.0 - edge_threshold):
 		page_dz = sign(dz) * _page_size.y
+		_page_armed_z = false
 
 	if page_dx != 0.0 or page_dz != 0.0:
 		_page(Vector3(page_dx, 0.0, page_dz))

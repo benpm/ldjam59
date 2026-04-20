@@ -20,10 +20,10 @@ You are the last hope to reconnect power to the radio transmitters. You must con
       3. mark task as done, copy it to the Completed section below
       4. commit and push, resolve merge conflicts if they are simple
  -->
-- [ ] Camera motion should have a threshold zone the player needs to move some X units past in order to trigger the camera to move, only if the player is not already in that zone. Otherwise, the player needs to move outside of the threshold zone for camera motion to be "armed" - this should prevent the camera from moving constantly back and forth in an annoying way the player is on the edge
 
 ---
 
+- [x] Camera motion should have a threshold zone with hysteresis to prevent constant back-and-forth paging
 - [x] Create a pause menu
 - [x] Create a menu scene with a play button and a volume slider
 - [x] The anchors of enemy cables should only move once in a while
